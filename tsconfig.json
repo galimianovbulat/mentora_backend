@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "baseUrl": "./src",
+    "ignoreDeprecations": "6.0",
+    "target": "esnext",
+    "module": "commonjs",
+    "sourceMap": true,
+    "lib": ["esnext"],
+    "typeRoots": ["./node_modules/@types", "src/@types"],
+    "paths": {
+      "@config": ["config"],
+      "@app": ["app"],
+      "@db": ["db"],
+      "@router": ["router"],
+      "@cron": ["cron"],
+      "@tools/*": ["tools/*"],
+      "@helpers/*": ["helpers/*"],
+      "@entities/*": ["entities/*"],
+      "@services/*": ["services/*"],
+      "@testing-utils/*": ["testing-utils/*"]
+    },
+
+    "strict": true,
+    "esModuleInterop": true,
+    "noImplicitAny": false,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "isolatedModules": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["**/*.spec.ts", "./node_modules/*"]
+}
