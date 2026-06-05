@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 import { USER_NAME_MAX_LENGTH, USER_PASSWORD_MAX_LENGTH, USER_ROLE } from './constants';
 
@@ -9,6 +9,7 @@ export class User {
 
     @Column('varchar', {
         length: USER_NAME_MAX_LENGTH,
+        unique: true,
     })
     name!: string;
 
@@ -21,4 +22,7 @@ export class User {
         enum: USER_ROLE,
     })
     role!: USER_ROLE;
+
+    @CreateDateColumn()
+    createdAt!: Date;
 }
