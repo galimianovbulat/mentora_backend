@@ -7,7 +7,7 @@ import { AppDataSource } from './data-source';
 
 const app = express();
 
-void (async function() {
+void (async function () {
     await AppDataSource.initialize();
     console.log('DB is here!');
 

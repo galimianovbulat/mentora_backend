@@ -7,62 +7,62 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 import { globalIgnores } from 'eslint/config';
 
 export default tseslint.config([
-  globalIgnores(['dist', 'build', 'node_modules', 'coverage', 'eslint.config.js']),
+    globalIgnores(['dist', 'build', 'node_modules', 'coverage', 'eslint.config.js']),
 
-  js.configs.recommended,
+    js.configs.recommended,
 
-  ...tseslint.configs.strictTypeChecked,
-  ...tseslint.configs.stylisticTypeChecked,
+    ...tseslint.configs.strictTypeChecked,
+    ...tseslint.configs.stylisticTypeChecked,
 
-  {
-    files: ['**/*.ts'],
+    {
+        files: ['**/*.ts'],
 
-    plugins: {
-      'simple-import-sort': simpleImportSort,
-      import: importPlugin,
-    },
-
-    languageOptions: {
-      ecmaVersion: 2022,
-      globals: globals.node,
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-
-    rules: {
-      'simple-import-sort/imports': 'error',
-      'simple-import-sort/exports': 'error',
-
-      'import/first': 'error',
-      'import/newline-after-import': 'error',
-      'import/no-duplicates': 'error',
-
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-misused-promises': 'error',
-      '@typescript-eslint/await-thenable': 'error',
-      '@typescript-eslint/require-await': 'error',
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        {
-          prefer: 'type-imports',
+        plugins: {
+            'simple-import-sort': simpleImportSort,
+            import: importPlugin,
         },
-      ],
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
+
+        languageOptions: {
+            ecmaVersion: 2022,
+            globals: globals.node,
+            parserOptions: {
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname,
+            },
         },
-      ],
 
-      'no-console': 'off',
-      'prefer-const': 'error',
-      eqeqeq: ['error', 'always'],
+        rules: {
+            'simple-import-sort/imports': 'error',
+            'simple-import-sort/exports': 'error',
+
+            'import/first': 'error',
+            'import/newline-after-import': 'error',
+            'import/no-duplicates': 'error',
+
+            '@typescript-eslint/no-explicit-any': 'error',
+            '@typescript-eslint/no-floating-promises': 'error',
+            '@typescript-eslint/no-misused-promises': 'error',
+            '@typescript-eslint/await-thenable': 'error',
+            '@typescript-eslint/require-await': 'error',
+            '@typescript-eslint/consistent-type-imports': [
+                'error',
+                {
+                    prefer: 'type-imports',
+                },
+            ],
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                {
+                    argsIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                },
+            ],
+
+            'no-console': 'off',
+            'prefer-const': 'error',
+            eqeqeq: ['error', 'always'],
+        },
     },
-  },
 
-  eslintConfigPrettier,
+    eslintConfigPrettier,
 ]);
