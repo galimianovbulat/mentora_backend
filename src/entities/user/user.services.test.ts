@@ -93,7 +93,6 @@ describe('UserService', () => {
         const createdUser = {
             id: 1,
             name: 'admin',
-            password: 'hashed-password',
             role: USER_ROLE.ADMIN,
             createdAt: new Date(),
         } as User;

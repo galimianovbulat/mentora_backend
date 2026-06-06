@@ -14,5 +14,6 @@ export default {
         '^helpers/(.*)$': '<rootDir>/src/helpers/$1',
         '^entities/(.*)$': '<rootDir>/src/entities/$1',
         '^config$': '<rootDir>/src/config.ts',
+        '^app$': '<rootDir>/src/app.ts',
     },
 };

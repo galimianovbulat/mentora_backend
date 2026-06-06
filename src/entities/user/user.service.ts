@@ -3,13 +3,15 @@ import { hashPassword } from 'helpers/hash-password';
 
 import type { CreateUserDto } from './user.dto';
 import { User } from './user.entity';
+import { toPublicUser } from './user.mapper';
+import type { IPublicUser } from './user.response';
 
 export class UserService {
     public constructor(
         private readonly userRepository = AppDataSource.getRepository(User),
     ) {}
 
-    public async getUserByName(name: string): Promise<User | null> {
+    public async getUserByName(name: string,): Promise<User | null> {
         return this.userRepository.findOne({
             where: {
                 name,
@@ -17,7 +19,21 @@ export class UserService {
         });
     }
 
-    public async createUser(dto: CreateUserDto): Promise<User> {
+    public async getPublicUserByName(name: string): Promise<IPublicUser | null> {
+        const user = await this.userRepository.findOne({
+            where: {
+                name,
+            },
+        });
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        return toPublicUser(user);
+    }
+
+    public async createUser(dto: CreateUserDto): Promise<IPublicUser> {
         const existingUser = await this.getUserByName(dto.name);
 
         if (existingUser) {
@@ -32,6 +48,6 @@ export class UserService {
             role: dto.role,
         });
 
-        return user;
+        return toPublicUser(user);
     }
 }
