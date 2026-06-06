@@ -2,6 +2,9 @@ import type {
     Request,
     Response,
 } from 'express';
+import {
+    ZodError,
+} from 'zod';
 
 import {
     createUserDto,
@@ -20,7 +23,27 @@ export async function createUser(req: Request, res: Response): Promise<void> {
         const user = await userService.createUser(dto);
         res.json(user);
     }
-    catch(e) {
-        res.status(500).json(e);
+    catch(error) {
+        if (error instanceof ZodError) {
+            res.status(400).json({
+                message: 'Invalid request body',
+                errors: error.issues,
+            });
+
+            return;
+        }
+
+        if (error instanceof Error && error.message === 'User already exists') {
+            res.status(409).json({
+                message: error.message,
+            });
+
+            return;
+        }
+
+        res.status(500).json({
+            message: 'Internal server error',
+        });
+
     }
 }
