@@ -7,7 +7,7 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 import { globalIgnores } from 'eslint/config';
 
 export default tseslint.config([
-    globalIgnores(['dist', 'build', 'node_modules', 'coverage', 'eslint.config.js']),
+    globalIgnores(['dist', 'build', 'node_modules', 'coverage', 'eslint.config.js', 'jest.config.mjs']),
 
     js.configs.recommended,
 

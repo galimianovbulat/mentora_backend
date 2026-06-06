@@ -1,20 +1,16 @@
 import { AppDataSource } from 'data-source';
 import { hashPassword } from 'helpers/hash-password';
-import type { Repository } from 'typeorm';
 
-import type {
-    CreateUserDto,
-} from './user.dto';
+import type { CreateUserDto } from './user.dto';
 import { User } from './user.entity';
 
-
 export class UserService {
-    protected getRepository(): Repository<User> {
-        return AppDataSource.getRepository(User);
-    }
+    public constructor(
+        private readonly userRepository = AppDataSource.getRepository(User),
+    ) {}
 
     public async getUserByName(name: string): Promise<User | null> {
-        return this.getRepository().findOne({
+        return this.userRepository.findOne({
             where: {
                 name,
             },
@@ -30,7 +26,7 @@ export class UserService {
 
         const passwordHash = await hashPassword(dto.password);
 
-        const user = await this.getRepository().save({
+        const user = await this.userRepository.save({
             name: dto.name,
             password: passwordHash,
             role: dto.role,

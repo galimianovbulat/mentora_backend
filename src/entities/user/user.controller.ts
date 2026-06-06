@@ -1,17 +1,8 @@
-import type {
-    Request,
-    Response,
-} from 'express';
-import {
-    ZodError,
-} from 'zod';
+import type { Request, Response } from 'express';
+import { ZodError } from 'zod';
 
-import {
-    createUserDto,
-} from './user.dto';
-import {
-    UserService,
-} from './user.service';
+import { createUserDto } from './user.dto';
+import { UserService } from './user.service';
 
 const userService = new UserService();
 
@@ -22,8 +13,7 @@ export async function createUser(req: Request, res: Response): Promise<void> {
         const dto = createUserDto.parse(req.body);
         const user = await userService.createUser(dto);
         res.json(user);
-    }
-    catch(error) {
+    } catch (error) {
         if (error instanceof ZodError) {
             res.status(400).json({
                 message: 'Invalid request body',
@@ -44,6 +34,5 @@ export async function createUser(req: Request, res: Response): Promise<void> {
         res.status(500).json({
             message: 'Internal server error',
         });
-
     }
 }

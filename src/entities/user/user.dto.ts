@@ -1,10 +1,6 @@
-import {
-    z,
-} from 'zod';
+import { z } from 'zod';
 
-import {
-    USER_ROLE,
-} from './constants';
+import { USER_ROLE } from './constants';
 
 export const createUserDto = z.object({
     name: z.string(),

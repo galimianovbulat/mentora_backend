@@ -1,11 +1,7 @@
 import 'dotenv/config';
 
-import {
-    CREATE_USER_ROUTE,
-} from 'entities/user/constants';
-import {
-    userRouter,
-} from 'entities/user/user.routes';
+import { CREATE_USER_ROUTE } from 'entities/user/constants';
+import { userRouter } from 'entities/user/user.routes';
 import express from 'express';
 
 import config from './config';

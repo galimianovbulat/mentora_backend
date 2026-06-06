@@ -7,6 +7,7 @@
         "module": "commonjs",
         "sourceMap": true,
         "lib": ["esnext"],
+        "types": ["node", "jest"],
         "typeRoots": ["./node_modules/@types", "src/@types"],
         "paths": {
             "@config": ["config"],
