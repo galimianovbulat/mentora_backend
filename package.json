@@ -23,7 +23,8 @@
         "jsonwebtoken": "^9.0.3",
         "pg": "^8.21.0",
         "reflect-metadata": "^0.2.2",
-        "typeorm": "^0.3.30"
+        "typeorm": "^0.3.30",
+        "zod": "^4.4.3"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.4",

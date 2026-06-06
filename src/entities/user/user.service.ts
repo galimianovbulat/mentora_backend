@@ -2,8 +2,11 @@ import { AppDataSource } from 'data-source';
 import { hashPassword } from 'helpers/hash-password';
 import type { Repository } from 'typeorm';
 
+import type {
+    CreateUserDto,
+} from './user.dto';
 import { User } from './user.entity';
-import type { ICreateUser } from './user.types';
+
 
 export class UserService {
     protected getRepository(): Repository<User> {
@@ -18,19 +21,19 @@ export class UserService {
         });
     }
 
-    public async createUser(rawUser: ICreateUser): Promise<User> {
-        const existingUser = await this.getUserByName(rawUser.name);
+    public async createUser(dto: CreateUserDto): Promise<User> {
+        const existingUser = await this.getUserByName(dto.name);
 
         if (existingUser) {
             throw new Error('User already exists');
         }
 
-        const passwordHash = await hashPassword(rawUser.password);
+        const passwordHash = await hashPassword(dto.password);
 
         const user = await this.getRepository().save({
-            name: rawUser.name,
+            name: dto.name,
             password: passwordHash,
-            role: rawUser.role,
+            role: dto.role,
         });
 
         return user;
