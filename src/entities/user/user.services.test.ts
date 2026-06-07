@@ -1,18 +1,10 @@
-import type {
-    Repository,
-} from 'typeorm';
+import type { Repository } from 'typeorm';
 
-import {
-    USER_ROLE,
-} from './constants';
-import type {
-    User,
-} from './user.entity';
-import {
-    UserService,
-} from './user.service';
+import { USER_ROLE } from './constants';
+import type { User } from './user.entity';
+import { UserService } from './user.service';
 
-jest.mock('helpers/hash-password', () => ({
+jest.mock('helpers/bcrypt', () => ({
     hashPassword: jest.fn().mockResolvedValue('hashed-password'),
 }));
 
@@ -82,8 +74,7 @@ describe('UserService', () => {
     it('should throw error if user not found by name', async () => {
         findOneMock.mockResolvedValue(null);
 
-        await expect(userService.getPublicUserByName('name'))
-            .rejects.toThrow('User not found');
+        await expect(userService.getPublicUserByName('name')).rejects.toThrow('User not found');
     });
 
     it('should return null if user not found by name', async () => {

@@ -7,5 +7,5 @@ export function toPublicUser(user: User): IPublicUser {
         name: user.name,
         role: user.role,
         createdAt: user.createdAt,
-    }
+    };
 }

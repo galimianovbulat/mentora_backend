@@ -1,5 +1,5 @@
 import { AppDataSource } from 'data-source';
-import { hashPassword } from 'helpers/hash-password';
+import { hashPassword } from 'helpers/bcrypt';
 
 import type { CreateUserDto } from './user.dto';
 import { User } from './user.entity';
@@ -7,11 +7,9 @@ import { toPublicUser } from './user.mapper';
 import type { IPublicUser } from './user.response';
 
 export class UserService {
-    public constructor(
-        private readonly userRepository = AppDataSource.getRepository(User),
-    ) {}
+    public constructor(private readonly userRepository = AppDataSource.getRepository(User)) {}
 
-    public async getUserByName(name: string,): Promise<User | null> {
+    public async getUserByName(name: string): Promise<User | null> {
         return this.userRepository.findOne({
             where: {
                 name,
