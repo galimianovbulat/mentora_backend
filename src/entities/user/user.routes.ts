@@ -1,5 +1,6 @@
-import { createUser } from 'entities/user/user.controller';
 import { Router } from 'express';
+
+import { createUser } from './user.controller';
 
 export const userRouter = Router();
 

@@ -65,7 +65,7 @@ describe('POST /user', () => {
         expect(response.body).toHaveProperty('message', 'Invalid request body');
     });
 
-    it('should return 200 and create user', async () => {
+    it('should return 409 and User already exists', async () => {
         jest.spyOn(UserService.prototype, 'createUser').mockRejectedValue(
             new Error('User already exists'),
         );
