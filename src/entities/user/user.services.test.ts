@@ -58,6 +58,34 @@ describe('UserService', () => {
         expect(result).toEqual(user);
     });
 
+    it('should get public user by name without password', async () => {
+        const user = {
+            id: 1,
+            name: 'admin',
+            role: USER_ROLE.ADMIN,
+            createdAt: new Date(),
+        } as User;
+
+        findOneMock.mockResolvedValue(user);
+
+        const result = await userService.getPublicUserByName('admin');
+
+        expect(findOneMock).toHaveBeenCalledWith({
+            where: {
+                name: 'admin',
+            },
+        });
+
+        expect(result).toEqual(user);
+    });
+
+    it('should throw error if user not found by name', async () => {
+        findOneMock.mockResolvedValue(null);
+
+        await expect(userService.getPublicUserByName('name'))
+            .rejects.toThrow('User not found');
+    });
+
     it('should return null if user not found by name', async () => {
         findOneMock.mockResolvedValue(null);
 

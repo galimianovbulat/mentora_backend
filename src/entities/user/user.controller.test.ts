@@ -79,4 +79,38 @@ describe('POST /user', () => {
 
         expect(response.body).toHaveProperty('message', 'Invalid request body');
     });
+
+    it('should return 200 and create user', async () => {
+        jest.spyOn(UserService.prototype, 'createUser')
+            .mockRejectedValue(new Error('User already exists'));
+
+        const response = await request(app)
+            .post('/user')
+            .send({
+                name: 'admin',
+                password: 'password',
+                role: USER_ROLE.ADMIN,
+            });
+
+        expect(response.status).toBe(409);
+
+        expect(response.body).toHaveProperty('message', 'User already exists');
+    });
+
+    it('should return 500 on unexpected error', async () => {
+        jest.spyOn(UserService.prototype, 'createUser')
+            .mockRejectedValue(new Error('Database exploded'));
+
+        const response = await request(app)
+            .post('/user')
+            .send({
+                name: 'admin',
+                password: 'password',
+                role: USER_ROLE.ADMIN,
+            });
+
+        expect(response.status).toBe(500);
+
+        expect(response.body).toHaveProperty('message', 'Internal server error');
+    });
 });
