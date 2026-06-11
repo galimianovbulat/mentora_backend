@@ -18,8 +18,6 @@
             "@tools/*": ["tools/*"],
             "@helpers/*": ["helpers/*"],
             "@entities/*": ["entities/*"],
-            "@services/*": ["services/*"],
-            "@testing-utils/*": ["testing-utils/*"]
         },
 
         "strict": true,
