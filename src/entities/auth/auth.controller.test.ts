@@ -16,7 +16,7 @@ describe('POST /auth', () => {
 
         jest.spyOn(AuthService.prototype, 'login').mockResolvedValue(tokens);
 
-        const response = await request(app).post('/auth').send({
+        const response = await request(app).post('/login').send({
             name: 'name',
             password: 'password',
         });
@@ -58,7 +58,7 @@ describe('POST /auth', () => {
     it('should return 401 and User not found', async () => {
         jest.spyOn(AuthService.prototype, 'login').mockRejectedValue(new Error('User not found'));
 
-        const response = await request(app).post('/auth').send({
+        const response = await request(app).post('/login').send({
             name: 'admin',
             password: 'password',
         });
@@ -73,7 +73,7 @@ describe('POST /auth', () => {
             new Error('Incorrect password'),
         );
 
-        const response = await request(app).post('/auth').send({
+        const response = await request(app).post('/login').send({
             name: 'admin',
             password: 'password',
         });
@@ -88,7 +88,7 @@ describe('POST /auth', () => {
             new Error('Database exploded'),
         );
 
-        const response = await request(app).post('/auth').send({
+        const response = await request(app).post('/login').send({
             name: 'admin',
             password: 'password',
         });

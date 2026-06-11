@@ -17,7 +17,7 @@
             "@cron": ["cron"],
             "@tools/*": ["tools/*"],
             "@helpers/*": ["helpers/*"],
-            "@entities/*": ["entities/*"],
+            "@entities/*": ["entities/*"]
         },
 
         "strict": true,
