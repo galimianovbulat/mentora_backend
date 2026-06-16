@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import { ZodError } from 'zod';
 
+import { getPayloadFromToken } from './functions';
 import { createUserDto } from './user.dto';
 import { UserService } from './user.service';
 
@@ -33,4 +34,22 @@ export async function createUser(req: Request, res: Response): Promise<void> {
             message: 'Internal server error',
         });
     }
+}
+
+export function getMe(req: Request, res: Response): void {
+    const authHeader = req.headers.authorization; 
+
+    if (!authHeader) {
+        res.status(401).json({
+            message: 'Unauthorized',
+        });
+
+        return;
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+
+    const payload = getPayloadFromToken(token);
+
+    res.json(payload);
 }
