@@ -6,28 +6,28 @@ Mentora is an educational web application designed to help tutors manage their s
 
 Current functionality:
 
-* User authentication
-* Responsive user interface
-* Tutor profile management
-* Schedule and lesson booking foundation
-* Form validation
-* API integration
+- User authentication
+- Responsive user interface
+- Tutor profile management
+- Schedule and lesson booking foundation
+- Form validation
+- API integration
 
 ## Tech Stack
 
 Frontend:
 
-* React
-* TypeScript
-* Vite
-* SCSS
+- React
+- TypeScript
+- Vite
+- SCSS
 
 Backend (in progress):
 
-* Node.js
-* Express
-* PostgreSQL
-* TypeORM
+- Node.js
+- Express
+- PostgreSQL
+- TypeORM
 
 ## Project Goal
 

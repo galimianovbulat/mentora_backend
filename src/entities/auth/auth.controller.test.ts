@@ -1,4 +1,5 @@
 import { app } from 'app';
+import { ApiError } from 'errors/api-error';
 import request from 'supertest';
 
 import { AuthService } from './auth.services';
@@ -28,50 +29,62 @@ describe('POST /auth', () => {
     });
 
     it('should return 400 if body has not password', async () => {
-        const response = await request(app).post('/user').send({
+        const response = await request(app).post('/login').send({
             name: 'admin',
         });
 
         expect(response.status).toBe(400);
 
-        expect(response.body).toHaveProperty('message', 'Invalid request body');
+        expect(response.body).toHaveProperty('message', 'Invalid request');
+        expect(response.body).toHaveProperty(
+            'errors',
+            expect.arrayContaining([
+                expect.objectContaining({
+                    path: ['password'],
+                }),
+            ]),
+        );
     });
 
     it('should return 400 if body has not name', async () => {
-        const response = await request(app).post('/user').send({
+        const response = await request(app).post('/login').send({
             password: 'password',
         });
 
         expect(response.status).toBe(400);
 
-        expect(response.body).toHaveProperty('message', 'Invalid request body');
+        expect(response.body).toHaveProperty('message', 'Invalid request');
+        expect(response.body).toHaveProperty(
+            'errors',
+            expect.arrayContaining([
+                expect.objectContaining({
+                    path: ['name'],
+                }),
+            ]),
+        );
     });
 
     it('should return 400 if body is empty', async () => {
-        const response = await request(app).post('/user').send({});
+        const response = await request(app).post('/login').send({});
 
         expect(response.status).toBe(400);
 
-        expect(response.body).toHaveProperty('message', 'Invalid request body');
-    });
-
-    it('should return 401 and User not found', async () => {
-        jest.spyOn(AuthService.prototype, 'login').mockRejectedValue(new Error('User not found'));
-
-        const response = await request(app).post('/login').send({
-            name: 'admin',
-            password: 'password',
-        });
-
-        expect(response.status).toBe(401);
-
-        expect(response.body).toHaveProperty('message', 'User not found');
-    });
-
-    it('should return 401 and Incorrect password', async () => {
-        jest.spyOn(AuthService.prototype, 'login').mockRejectedValue(
-            new Error('Incorrect password'),
+        expect(response.body).toHaveProperty('message', 'Invalid request');
+        expect(response.body).toHaveProperty(
+            'errors',
+            expect.arrayContaining([
+                expect.objectContaining({
+                    path: ['name'],
+                }),
+                expect.objectContaining({
+                    path: ['password'],
+                }),
+            ]),
         );
+    });
+
+    it('should return 401 and Invalid credentials if user not found', async () => {
+        jest.spyOn(AuthService.prototype, 'login').mockRejectedValue(ApiError.invalidCredentials());
 
         const response = await request(app).post('/login').send({
             name: 'admin',
@@ -80,7 +93,22 @@ describe('POST /auth', () => {
 
         expect(response.status).toBe(401);
 
-        expect(response.body).toHaveProperty('message', 'Incorrect password');
+        expect(response.body).toHaveProperty('message', 'Invalid credentials');
+        expect(response.body).toHaveProperty('errors', []);
+    });
+
+    it('should return 401 and Invalid credentials if password is incorrect', async () => {
+        jest.spyOn(AuthService.prototype, 'login').mockRejectedValue(ApiError.invalidCredentials());
+
+        const response = await request(app).post('/login').send({
+            name: 'admin',
+            password: 'password',
+        });
+
+        expect(response.status).toBe(401);
+
+        expect(response.body).toHaveProperty('message', 'Invalid credentials');
+        expect(response.body).toHaveProperty('errors', []);
     });
 
     it('should return 500 on unexpected error', async () => {
@@ -95,6 +123,6 @@ describe('POST /auth', () => {
 
         expect(response.status).toBe(500);
 
-        expect(response.body).toHaveProperty('message', 'Internal server error');
+        expect(response.body).toHaveProperty('message', 'Unknown error');
     });
 });

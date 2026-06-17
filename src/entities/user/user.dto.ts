@@ -5,7 +5,7 @@ import { USER_ROLE } from './constants';
 export const payloadDto = z.object({
     id: z.number(),
     role: z.enum(USER_ROLE),
-})
+});
 
 export type PayloadDto = z.infer<typeof payloadDto>;
 

@@ -12,11 +12,7 @@ export class ApiError extends Error {
 
     public readonly errors: unknown[];
 
-    public constructor(
-        status: number,
-        message: string,
-        errors: unknown[] = [],
-    ) {
+    public constructor(status: number, message: string, errors: unknown[] = []) {
         super(message);
 
         this.status = status;

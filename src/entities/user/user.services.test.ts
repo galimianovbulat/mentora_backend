@@ -1,3 +1,5 @@
+import type { ApiError } from 'errors/api-error';
+import { hashPassword } from 'helpers/bcrypt';
 import type { Repository } from 'typeorm';
 
 import { USER_ROLE } from './constants';
@@ -51,11 +53,13 @@ describe('UserService', () => {
     });
 
     it('should get public user by name without password', async () => {
+        const createdAt = new Date();
         const user = {
             id: 1,
             name: 'admin',
+            password: 'hashed-password',
             role: USER_ROLE.ADMIN,
-            createdAt: new Date(),
+            createdAt,
         } as User;
 
         findOneMock.mockResolvedValue(user);
@@ -68,13 +72,23 @@ describe('UserService', () => {
             },
         });
 
-        expect(result).toEqual(user);
+        expect(result).toEqual({
+            id: user.id,
+            name: user.name,
+            role: user.role,
+            createdAt,
+        });
+        expect(result).not.toHaveProperty('password');
     });
 
     it('should throw error if user not found by name', async () => {
         findOneMock.mockResolvedValue(null);
 
-        await expect(userService.getPublicUserByName('name')).rejects.toThrow('User not found');
+        await expect(userService.getPublicUserByName('name')).rejects.toMatchObject({
+            status: 401,
+            message: 'User not found',
+            errors: [],
+        } satisfies Partial<ApiError>);
     });
 
     it('should return null if user not found by name', async () => {
@@ -97,23 +111,35 @@ describe('UserService', () => {
             name: 'admin',
         });
 
-        await expect(
-            userService.createUser({
-                name: 'admin',
-                password: '123456',
-                role: USER_ROLE.ADMIN,
-            }),
-        ).rejects.toThrow('User already exists');
+        const result = userService.createUser({
+            name: 'admin',
+            password: '123456',
+            role: USER_ROLE.ADMIN,
+        });
 
+        await expect(result).rejects.toMatchObject({
+            status: 401,
+            message: 'User already exists',
+            errors: [],
+        } satisfies Partial<ApiError>);
+
+        expect(findOneMock).toHaveBeenCalledWith({
+            where: {
+                name: 'admin',
+            },
+        });
+        expect(hashPassword).not.toHaveBeenCalled();
         expect(saveMock).not.toHaveBeenCalled();
     });
 
     it('should create user if user does not exist', async () => {
+        const createdAt = new Date();
         const createdUser = {
             id: 1,
             name: 'admin',
+            password: 'hashed-password',
             role: USER_ROLE.ADMIN,
-            createdAt: new Date(),
+            createdAt,
         } as User;
 
         findOneMock.mockResolvedValue(null);
@@ -131,12 +157,19 @@ describe('UserService', () => {
             },
         });
 
+        expect(hashPassword).toHaveBeenCalledWith('123456');
         expect(saveMock).toHaveBeenCalledWith({
             name: 'admin',
             password: 'hashed-password',
             role: USER_ROLE.ADMIN,
         });
 
-        expect(result).toEqual(createdUser);
+        expect(result).toEqual({
+            id: createdUser.id,
+            name: createdUser.name,
+            role: createdUser.role,
+            createdAt,
+        });
+        expect(result).not.toHaveProperty('password');
     });
 });

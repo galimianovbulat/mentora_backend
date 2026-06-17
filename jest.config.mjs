@@ -13,6 +13,7 @@ export default {
         '^data-source$': '<rootDir>/src/data-source.ts',
         '^helpers/(.*)$': '<rootDir>/src/helpers/$1',
         '^entities/(.*)$': '<rootDir>/src/entities/$1',
+        '^errors/(.*)$': '<rootDir>/src/errors/$1',
         '^config$': '<rootDir>/src/config.ts',
         '^app$': '<rootDir>/src/app.ts',
     },

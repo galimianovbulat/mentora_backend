@@ -16,7 +16,7 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
         res.json(tokens);
     } catch (error) {
         if (error instanceof ZodError) {
-            next(ApiError.badRequest(error.issues))
+            next(ApiError.badRequest(error.issues));
 
             return;
         }

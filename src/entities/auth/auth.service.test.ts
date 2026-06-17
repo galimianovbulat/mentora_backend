@@ -1,9 +1,12 @@
+import config from 'config';
 import { USER_ROLE } from 'entities/user/constants';
 import type { UserService } from 'entities/user/user.service';
+import type { ApiError } from 'errors/api-error';
 import { isPassEquals } from 'helpers/bcrypt';
 import jwt from 'jsonwebtoken';
 
 import { AuthService } from './auth.services';
+import { ACCESS_TOKEN_LIFETIME, REFRESH_TOKEN_LIFETIME } from './constants';
 
 jest.mock('helpers/bcrypt', () => ({
     isPassEquals: jest.fn(),
@@ -33,7 +36,14 @@ describe('AuthServices', () => {
     it('should throw if user not found', async () => {
         getUserByNameMock.mockResolvedValue(null);
 
-        await expect(authService.login('admin', 'password')).rejects.toThrow('User not found');
+        await expect(authService.login('admin', 'password')).rejects.toMatchObject({
+            status: 401,
+            message: 'Invalid credentials',
+            errors: [],
+        } satisfies Partial<ApiError>);
+
+        expect(getUserByNameMock).toHaveBeenCalledWith('admin');
+        expect(isPassEquals).not.toHaveBeenCalled();
     });
 
     it('should throw if password is incorrect', async () => {
@@ -46,7 +56,14 @@ describe('AuthServices', () => {
 
         jest.mocked(isPassEquals).mockResolvedValue(false);
 
-        await expect(authService.login('admin', 'password')).rejects.toThrow('Incorrect password');
+        await expect(authService.login('admin', 'password')).rejects.toMatchObject({
+            status: 401,
+            message: 'Invalid credentials',
+            errors: [],
+        } satisfies Partial<ApiError>);
+
+        expect(getUserByNameMock).toHaveBeenCalledWith('admin');
+        expect(isPassEquals).toHaveBeenCalledWith('password', 'hashed-password');
     });
 
     it('should return tokens if login is successful', async () => {
@@ -78,6 +95,28 @@ describe('AuthServices', () => {
         });
 
         expect(jwt.sign).toHaveBeenCalledTimes(2);
+        expect(jwt.sign).toHaveBeenNthCalledWith(
+            1,
+            {
+                id: 1,
+                role: USER_ROLE.ADMIN,
+            },
+            config.JWT_ACCESS_SECRET,
+            {
+                expiresIn: ACCESS_TOKEN_LIFETIME,
+            },
+        );
+        expect(jwt.sign).toHaveBeenNthCalledWith(
+            2,
+            {
+                id: 1,
+                role: USER_ROLE.ADMIN,
+            },
+            config.JWT_REFRESH_SECRET,
+            {
+                expiresIn: REFRESH_TOKEN_LIFETIME,
+            },
+        );
 
         expect(result).toEqual({
             accessToken: 'token',

@@ -26,14 +26,14 @@ export async function createUser(req: Request, res: Response, next: NextFunction
 
 export function getMe(req: Request, res: Response, next: NextFunction): void {
     try {
-        const authHeader = req.headers.authorization ?? ''; 
+        const authHeader = req.headers.authorization ?? '';
 
         const token = authHeader.replace('Bearer ', '');
 
         const payload = getPayloadFromToken(token);
 
         res.json(payload);
-    } catch(error) {
+    } catch (error) {
         next(error);
     }
 }
