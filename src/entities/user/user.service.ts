@@ -1,4 +1,5 @@
 import { AppDataSource } from 'data-source';
+import { ApiError } from 'errors/api-error';
 import { hashPassword } from 'helpers/bcrypt';
 
 import type { CreateUserDto } from './user.dto';
@@ -25,7 +26,7 @@ export class UserService {
         });
 
         if (!user) {
-            throw new Error('User not found');
+            throw ApiError.notFound('User');
         }
 
         return toPublicUser(user);
@@ -35,7 +36,7 @@ export class UserService {
         const existingUser = await this.getUserByName(dto.name);
 
         if (existingUser) {
-            throw new Error('User already exists');
+            throw ApiError.alreadyExist('User');
         }
 
         const passwordHash = await hashPassword(dto.password);

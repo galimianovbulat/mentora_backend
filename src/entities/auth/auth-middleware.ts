@@ -1,10 +1,11 @@
 import type { PayloadDto } from 'entities/auth/auth.dto';
 import type { USER_ROLE } from 'entities/user/constants';
 import { getPayloadFromToken } from 'entities/user/functions';
+import { ApiError } from 'errors/api-error';
 import type { NextFunction, Request, RequestHandler,Response } from 'express';
 
 export function authMiddleware (role?: USER_ROLE): RequestHandler {
-    return function(req: Request, res: Response, next: NextFunction): void {
+    return function(req: Request, __res: Response, next: NextFunction): void {
         const authHeader = req.headers.authorization ?? '';
         const token = authHeader.replace('Bearer ', '');
 
@@ -13,17 +14,13 @@ export function authMiddleware (role?: USER_ROLE): RequestHandler {
         try {
             user = getPayloadFromToken(token);
         } catch {
-            res.status(401).json({
-                message: 'Unauthorized',
-            });
+            next(ApiError.unauthorized());
 
             return;
         }
 
         if (role && user.role !== role) {
-            res.status(403).json({
-                message: 'Forbidden',
-            });
+            next(ApiError.forbidden());
 
             return;
         }

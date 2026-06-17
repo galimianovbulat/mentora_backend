@@ -1,10 +1,10 @@
 import config from 'config';
 import { UserService } from 'entities/user/user.service';
+import { ApiError } from 'errors/api-error';
 import { isPassEquals } from 'helpers/bcrypt';
 import jwt from 'jsonwebtoken';
 
 import type { PayloadDto } from './auth.dto';
-import { payloadDto } from './auth.dto';
 import { ACCESS_TOKEN_LIFETIME, REFRESH_TOKEN_LIFETIME } from './constants';
 import type { ITokens } from './types';
 
@@ -15,6 +15,7 @@ export class AuthService {
         const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {
             expiresIn: ACCESS_TOKEN_LIFETIME,
         });
+
         const refreshToken = jwt.sign(payload, config.JWT_REFRESH_SECRET, {
             expiresIn: REFRESH_TOKEN_LIFETIME,
         });
@@ -29,15 +30,18 @@ export class AuthService {
         const user = await this.userService.getUserByName(username);
 
         if (!user) {
-            throw new Error('User not found');
+            throw ApiError.invalidCredentials();
         }
 
         const isEquals = await isPassEquals(password, user.password);
 
         if (!isEquals) {
-            throw new Error('Incorrect password');
+            throw ApiError.invalidCredentials();
         }
 
-        return this.generateToken(payloadDto.parse(user));
+        return this.generateToken({
+            id: user.id,
+            role: user.role,
+        });
     }
 }

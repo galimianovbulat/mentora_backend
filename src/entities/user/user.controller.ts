@@ -1,4 +1,5 @@
-import type { Request, Response } from 'express';
+import { ApiError } from 'errors/api-error';
+import type { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 
 import { getPayloadFromToken } from './functions';
@@ -7,49 +8,32 @@ import { UserService } from './user.service';
 
 const userService = new UserService();
 
-export async function createUser(req: Request, res: Response): Promise<void> {
+export async function createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
         const dto = createUserDto.parse(req.body);
         const user = await userService.createUser(dto);
         res.json(user);
     } catch (error) {
         if (error instanceof ZodError) {
-            res.status(400).json({
-                message: 'Invalid request body',
-                errors: error.issues,
-            });
+            next(ApiError.badRequest(error.issues));
 
             return;
         }
 
-        if (error instanceof Error && error.message === 'User already exists') {
-            res.status(409).json({
-                message: error.message,
-            });
-
-            return;
-        }
-
-        res.status(500).json({
-            message: 'Internal server error',
-        });
+        next(error);
     }
 }
 
-export function getMe(req: Request, res: Response): void {
-    const authHeader = req.headers.authorization; 
+export function getMe(req: Request, res: Response, next: NextFunction): void {
+    try {
+        const authHeader = req.headers.authorization ?? ''; 
 
-    if (!authHeader) {
-        res.status(401).json({
-            message: 'Unauthorized',
-        });
+        const token = authHeader.replace('Bearer ', '');
 
-        return;
+        const payload = getPayloadFromToken(token);
+
+        res.json(payload);
+    } catch(error) {
+        next(error);
     }
-
-    const token = authHeader.replace('Bearer ', '');
-
-    const payload = getPayloadFromToken(token);
-
-    res.json(payload);
 }
