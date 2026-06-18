@@ -1,9 +1,11 @@
 import { app } from 'app';
 import { ApiError } from 'errors/api-error';
+import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 
 import { USER_ROLE } from './constants';
 import * as userFunctions from './functions';
+import { getMe } from './user.controller';
 import type { User } from './user.entity';
 import { UserService } from './user.service';
 
@@ -146,6 +148,102 @@ describe('POST /user', () => {
     });
 });
 
+describe('GET /user', () => {
+    beforeEach(() => {
+        jest.restoreAllMocks();
+
+        jest.spyOn(userFunctions, 'getPayloadFromToken').mockReturnValue({
+            id: 1,
+            role: USER_ROLE.ADMIN,
+        });
+    });
+
+    it('should return 200 and users list', async () => {
+        const createdAt = new Date();
+        const users = [
+            {
+                id: 1,
+                name: 'admin',
+                password: 'hashed-password',
+                role: USER_ROLE.ADMIN,
+                createdAt,
+            },
+        ] as User[];
+
+        const getUsersMock = jest
+            .spyOn(UserService.prototype, 'getUsers')
+            .mockResolvedValue([users, 1]);
+
+        const response = await request(app)
+            .get('/user')
+            .set('Authorization', 'Bearer access-token')
+            .query({
+                skip: 0,
+                take: 10,
+                name: 'adm',
+            });
+
+        expect(response.status).toBe(200);
+        expect(getUsersMock).toHaveBeenCalledWith({
+            skip: 0,
+            take: 10,
+            name: 'adm',
+        });
+        expect(response.body).toEqual({
+            users: [
+                {
+                    id: users[0].id,
+                    name: users[0].name,
+                    role: users[0].role,
+                    createdAt: createdAt.toISOString(),
+                },
+            ],
+            count: 1,
+        });
+    });
+
+    it('should return 403 if user is not admin', async () => {
+        jest.spyOn(userFunctions, 'getPayloadFromToken').mockReturnValue({
+            id: 1,
+            role: USER_ROLE.STUDENT,
+        });
+
+        const getUsersMock = jest.spyOn(UserService.prototype, 'getUsers');
+
+        const response = await request(app)
+            .get('/user')
+            .set('Authorization', 'Bearer access-token')
+            .query({
+                skip: 0,
+                take: 10,
+            });
+
+        expect(response.status).toBe(403);
+        expect(response.body).toHaveProperty('message', 'Forbidden');
+        expect(response.body).toHaveProperty('errors', []);
+        expect(getUsersMock).not.toHaveBeenCalled();
+    });
+
+    it('should return 500 on unexpected error', async () => {
+        jest.spyOn(UserService.prototype, 'getUsers').mockRejectedValue(
+            new Error('Database exploded'),
+        );
+
+        const response = await request(app)
+            .get('/user')
+            .set('Authorization', 'Bearer access-token')
+            .query({
+                skip: 0,
+                take: 10,
+            });
+
+        expect(response.status).toBe(500);
+        expect(response.body).toEqual({
+            message: 'Unknown error',
+        });
+    });
+});
+
 describe('GET /user/me', () => {
     beforeEach(() => {
         jest.restoreAllMocks();
@@ -174,5 +272,46 @@ describe('GET /user/me', () => {
             id: 1,
             role: USER_ROLE.ADMIN,
         });
+    });
+
+    it('should return 500 if payload parsing fails in controller', async () => {
+        jest.spyOn(userFunctions, 'getPayloadFromToken')
+            .mockReturnValueOnce({
+                id: 1,
+                role: USER_ROLE.ADMIN,
+            })
+            .mockImplementationOnce(() => {
+                throw new Error('Invalid payload');
+            });
+
+        const response = await request(app)
+            .get('/user/me')
+            .set('Authorization', 'Bearer access-token');
+
+        expect(response.status).toBe(500);
+        expect(response.body).toEqual({
+            message: 'Unknown error',
+        });
+    });
+
+    it('should call next if authorization header is missing in controller', () => {
+        const error = new Error('Invalid payload');
+        const req = {
+            headers: {},
+        } as Request;
+        const res = {
+            json: jest.fn(),
+        } as unknown as Response;
+        const next = jest.fn() as jest.MockedFunction<NextFunction>;
+
+        jest.spyOn(userFunctions, 'getPayloadFromToken').mockImplementation(() => {
+            throw error;
+        });
+
+        getMe(req, res, next);
+
+        expect(userFunctions.getPayloadFromToken).toHaveBeenCalledWith('');
+        expect(res.json).not.toHaveBeenCalled();
+        expect(next).toHaveBeenCalledWith(error);
     });
 });

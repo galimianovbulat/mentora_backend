@@ -3,7 +3,8 @@ import type { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 
 import { getPayloadFromToken } from './functions';
-import { createUserDto } from './user.dto';
+import { createUserDto, getUsersDto } from './user.dto';
+import { toPublicUser } from './user.mapper';
 import { UserService } from './user.service';
 
 const userService = new UserService();
@@ -33,6 +34,21 @@ export function getMe(req: Request, res: Response, next: NextFunction): void {
         const payload = getPayloadFromToken(token);
 
         res.json(payload);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function getUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        const dto = getUsersDto.parse(req.query);
+
+        const [users, count] = await userService.getUsers(dto);
+
+        res.json({
+            users: users.map(toPublicUser),
+            count,
+        });
     } catch (error) {
         next(error);
     }

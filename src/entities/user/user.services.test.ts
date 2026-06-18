@@ -15,16 +15,39 @@ describe('UserService', () => {
 
     let findOneMock: jest.Mock;
     let saveMock: jest.Mock;
+    let createQueryBuilderMock: jest.Mock;
+    let andWhereMock: jest.Mock;
+    let skipMock: jest.Mock;
+    let takeMock: jest.Mock;
+    let getManyAndCountMock: jest.Mock;
 
     beforeEach(() => {
         jest.clearAllMocks();
 
         findOneMock = jest.fn();
         saveMock = jest.fn();
+        createQueryBuilderMock = jest.fn();
+        andWhereMock = jest.fn();
+        skipMock = jest.fn();
+        takeMock = jest.fn();
+        getManyAndCountMock = jest.fn();
+
+        const queryBuilderMock = {
+            andWhere: andWhereMock,
+            skip: skipMock,
+            take: takeMock,
+            getManyAndCount: getManyAndCountMock,
+        };
+
+        createQueryBuilderMock.mockReturnValue(queryBuilderMock);
+        andWhereMock.mockReturnValue(queryBuilderMock);
+        skipMock.mockReturnValue(queryBuilderMock);
+        takeMock.mockReturnValue(queryBuilderMock);
 
         const repositoryMock = {
             findOne: findOneMock,
             save: saveMock,
+            createQueryBuilder: createQueryBuilderMock,
         } as unknown as Repository<User>;
 
         userService = new UserService(repositoryMock);
@@ -103,6 +126,61 @@ describe('UserService', () => {
         });
 
         expect(result).toBeNull();
+    });
+
+    it('should get users without name filter', async () => {
+        const users = [
+            {
+                id: 1,
+                name: 'admin',
+                password: 'hashed-password',
+                role: USER_ROLE.ADMIN,
+                createdAt: new Date(),
+            },
+        ] as User[];
+
+        getManyAndCountMock.mockResolvedValue([users, 1]);
+
+        const result = await userService.getUsers({
+            skip: 0,
+            take: 10,
+        });
+
+        expect(createQueryBuilderMock).toHaveBeenCalledWith('user');
+        expect(andWhereMock).not.toHaveBeenCalled();
+        expect(skipMock).toHaveBeenCalledWith(0);
+        expect(takeMock).toHaveBeenCalledWith(10);
+        expect(getManyAndCountMock).toHaveBeenCalledTimes(1);
+        expect(result).toEqual([users, 1]);
+    });
+
+    it('should get users with name filter', async () => {
+        const users = [
+            {
+                id: 1,
+                name: 'admin',
+                password: 'hashed-password',
+                role: USER_ROLE.ADMIN,
+                createdAt: new Date(),
+            },
+        ] as User[];
+
+        getManyAndCountMock.mockResolvedValue([users, 1]);
+
+        const result = await userService.getUsers({
+            skip: 10,
+            take: 20,
+            name: 'adm',
+        });
+
+        expect(createQueryBuilderMock).toHaveBeenCalledWith('user');
+        expect(andWhereMock).toHaveBeenCalledWith('user.name ILIKE :name', {
+            name: '%adm%',
+        });
+        expect(skipMock).toHaveBeenCalledWith(10);
+        expect(takeMock).toHaveBeenCalledWith(20);
+        expect(getManyAndCountMock).toHaveBeenCalledTimes(1);
+        expect(result).toEqual([users, 1]);
     });
 
     it('should throw error if user already exists', async () => {

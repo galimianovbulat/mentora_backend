@@ -2,7 +2,7 @@ import { AppDataSource } from 'data-source';
 import { ApiError } from 'errors/api-error';
 import { hashPassword } from 'helpers/bcrypt';
 
-import type { CreateUserDto } from './user.dto';
+import type { CreateUserDto, GetUsersDto } from './user.dto';
 import { User } from './user.entity';
 import { toPublicUser } from './user.mapper';
 import type { IPublicUser } from './user.response';
@@ -16,6 +16,18 @@ export class UserService {
                 name,
             },
         });
+    }
+
+    public async getUsers(dto: GetUsersDto): Promise<[User[], number]> {
+        const queryBuilder = this.userRepository.createQueryBuilder('user');
+
+        if (dto.name) {
+            queryBuilder.andWhere('user.name ILIKE :name', {
+                name: `%${dto.name}%`,
+            });
+        }
+
+        return queryBuilder.skip(dto.skip).take(dto.take).getManyAndCount();
     }
 
     public async getPublicUserByName(name: string): Promise<IPublicUser | null> {
