@@ -13,7 +13,8 @@ export async function createUser(req: Request, res: Response, next: NextFunction
     try {
         const dto = createUserDto.parse(req.body);
         const user = await userService.createUser(dto);
-        res.json(user);
+
+        res.status(201).json(toPublicUser(user));
     } catch (error) {
         if (error instanceof ZodError) {
             next(ApiError.badRequest(error.issues));
@@ -28,9 +29,7 @@ export async function createUser(req: Request, res: Response, next: NextFunction
 export function getMe(req: Request, res: Response, next: NextFunction): void {
     try {
         const authHeader = req.headers.authorization ?? '';
-
         const token = authHeader.replace('Bearer ', '');
-
         const payload = getPayloadFromToken(token);
 
         res.json(payload);
@@ -42,7 +41,6 @@ export function getMe(req: Request, res: Response, next: NextFunction): void {
 export async function getUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
         const dto = getUsersDto.parse(req.query);
-
         const [users, count] = await userService.getUsers(dto);
 
         res.json({
@@ -50,6 +48,12 @@ export async function getUsers(req: Request, res: Response, next: NextFunction):
             count,
         });
     } catch (error) {
+        if (error instanceof ZodError) {
+            next(ApiError.badRequest(error.issues));
+
+            return;
+        }
+
         next(error);
     }
 }

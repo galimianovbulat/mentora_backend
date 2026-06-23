@@ -4,8 +4,6 @@ import { hashPassword } from 'helpers/bcrypt';
 
 import type { CreateUserDto, GetUsersDto } from './user.dto';
 import { User } from './user.entity';
-import { toPublicUser } from './user.mapper';
-import type { IPublicUser } from './user.response';
 
 export class UserService {
     public constructor(private readonly userRepository = AppDataSource.getRepository(User)) {}
@@ -14,6 +12,14 @@ export class UserService {
         return this.userRepository.findOne({
             where: {
                 name,
+            },
+        });
+    }
+
+    public async getUserById(id: number): Promise<User | null> {
+        return this.userRepository.findOne({
+            where: {
+                id,
             },
         });
     }
@@ -30,21 +36,7 @@ export class UserService {
         return queryBuilder.skip(dto.skip).take(dto.take).getManyAndCount();
     }
 
-    public async getPublicUserByName(name: string): Promise<IPublicUser | null> {
-        const user = await this.userRepository.findOne({
-            where: {
-                name,
-            },
-        });
-
-        if (!user) {
-            throw ApiError.notFound('User');
-        }
-
-        return toPublicUser(user);
-    }
-
-    public async createUser(dto: CreateUserDto): Promise<IPublicUser> {
+    public async createUser(dto: CreateUserDto): Promise<User> {
         const existingUser = await this.getUserByName(dto.name);
 
         if (existingUser) {
@@ -53,12 +45,10 @@ export class UserService {
 
         const passwordHash = await hashPassword(dto.password);
 
-        const user = await this.userRepository.save({
+        return this.userRepository.save({
             name: dto.name,
             password: passwordHash,
             role: dto.role,
         });
-
-        return toPublicUser(user);
     }
 }

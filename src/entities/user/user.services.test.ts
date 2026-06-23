@@ -75,43 +75,40 @@ describe('UserService', () => {
         expect(result).toEqual(user);
     });
 
-    it('should get public user by name without password', async () => {
-        const createdAt = new Date();
+    it('should get user by id', async () => {
         const user = {
             id: 1,
             name: 'admin',
             password: 'hashed-password',
             role: USER_ROLE.ADMIN,
-            createdAt,
+            createdAt: new Date(),
         } as User;
 
         findOneMock.mockResolvedValue(user);
 
-        const result = await userService.getPublicUserByName('admin');
+        const result = await userService.getUserById(1);
 
         expect(findOneMock).toHaveBeenCalledWith({
             where: {
-                name: 'admin',
+                id: 1,
             },
         });
 
-        expect(result).toEqual({
-            id: user.id,
-            name: user.name,
-            role: user.role,
-            createdAt,
-        });
-        expect(result).not.toHaveProperty('password');
+        expect(result).toEqual(user);
     });
 
-    it('should throw error if user not found by name', async () => {
+    it('should return null if user not found by id', async () => {
         findOneMock.mockResolvedValue(null);
 
-        await expect(userService.getPublicUserByName('name')).rejects.toMatchObject({
-            status: 401,
-            message: 'User not found',
-            errors: [],
-        } satisfies Partial<ApiError>);
+        const result = await userService.getUserById(1);
+
+        expect(findOneMock).toHaveBeenCalledWith({
+            where: {
+                id: 1,
+            },
+        });
+
+        expect(result).toBeNull();
     });
 
     it('should return null if user not found by name', async () => {
@@ -196,7 +193,7 @@ describe('UserService', () => {
         });
 
         await expect(result).rejects.toMatchObject({
-            status: 401,
+            status: 409,
             message: 'User already exists',
             errors: [],
         } satisfies Partial<ApiError>);
@@ -242,12 +239,6 @@ describe('UserService', () => {
             role: USER_ROLE.ADMIN,
         });
 
-        expect(result).toEqual({
-            id: createdUser.id,
-            name: createdUser.name,
-            role: createdUser.role,
-            createdAt,
-        });
-        expect(result).not.toHaveProperty('password');
+        expect(result).toEqual(createdUser);
     });
 });

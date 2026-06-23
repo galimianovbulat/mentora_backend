@@ -19,7 +19,7 @@ describe('POST /user', () => {
         });
     });
 
-    it('should return 200 and create user', async () => {
+    it('should return 201 and create user', async () => {
         const user = {
             id: 1,
             name: 'admin',
@@ -38,7 +38,7 @@ describe('POST /user', () => {
                 role: USER_ROLE.ADMIN,
             });
 
-        expect(response.status).toBe(200);
+        expect(response.status).toBe(201);
         expect(response.body).toHaveProperty('name', user.name);
         expect(response.body).not.toHaveProperty('password');
     });
@@ -106,7 +106,7 @@ describe('POST /user', () => {
         );
     });
 
-    it('should return 401 if user already exists', async () => {
+    it('should return 409 if user already exists', async () => {
         jest.spyOn(UserService.prototype, 'createUser').mockRejectedValue(
             ApiError.alreadyExist('User'),
         );
@@ -120,7 +120,7 @@ describe('POST /user', () => {
                 role: USER_ROLE.ADMIN,
             });
 
-        expect(response.status).toBe(401);
+        expect(response.status).toBe(409);
         expect(response.body).toEqual({
             message: 'User already exists',
             errors: [],
