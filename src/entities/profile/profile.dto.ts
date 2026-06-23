@@ -21,3 +21,9 @@ export const createTeacherProfileDto = baseProfileDto.extend({
 });
 
 export type CreateTeacherProfileDto = z.infer<typeof createTeacherProfileDto>;
+
+export const createStudentProfileDto = baseProfileDto.extend({
+    schoolGrade: z.enum(SCHOOL_GRADE),
+});
+
+export type CreateStudentProfileDto = z.infer<typeof createStudentProfileDto>;
