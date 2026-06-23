@@ -21,13 +21,7 @@ export async function getMyProfile(req: Request, res: Response, next: NextFuncti
             teacherProfileService.getTeacherProfileByUserId(userId),
             studentProfileService.getStudentProfileByUserId(userId),
         ]);
-        res.json(
-            toMyProfileResponse(
-                profile,
-                teacherProfile,
-                studentProfile,
-            ),
-        );
+        res.json(toMyProfileResponse(profile, teacherProfile, studentProfile));
     } catch (error) {
         next(error);
     }

@@ -274,44 +274,43 @@ describe('GET /user/me', () => {
         });
     });
 
-    it('should return 500 if payload parsing fails in controller', async () => {
-        jest.spyOn(userFunctions, 'getPayloadFromToken')
-            .mockReturnValueOnce({
-                id: 1,
-                role: USER_ROLE.ADMIN,
-            })
-            .mockImplementationOnce(() => {
-                throw new Error('Invalid payload');
-            });
-
-        const response = await request(app)
-            .get('/user/me')
-            .set('Authorization', 'Bearer access-token');
-
-        expect(response.status).toBe(500);
-        expect(response.body).toEqual({
-            message: 'Unknown error',
-        });
-    });
-
-    it('should call next if authorization header is missing in controller', () => {
-        const error = new Error('Invalid payload');
+    it('should return user from request in controller', () => {
+        const user = {
+            id: 1,
+            role: USER_ROLE.ADMIN,
+        };
         const req = {
-            headers: {},
+            user,
         } as Request;
         const res = {
             json: jest.fn(),
         } as unknown as Response;
         const next = jest.fn() as jest.MockedFunction<NextFunction>;
 
-        jest.spyOn(userFunctions, 'getPayloadFromToken').mockImplementation(() => {
-            throw error;
-        });
+        getMe(req, res, next);
+
+        expect(res.json).toHaveBeenCalledWith(user);
+        expect(next).not.toHaveBeenCalled();
+    });
+
+    it('should call next if response fails in controller', () => {
+        const error = new Error('Invalid payload');
+        const req = {
+            user: {
+                id: 1,
+                role: USER_ROLE.ADMIN,
+            },
+        } as Request;
+        const res = {
+            json: jest.fn().mockImplementation(() => {
+                throw error;
+            }),
+        } as unknown as Response;
+        const next = jest.fn() as jest.MockedFunction<NextFunction>;
 
         getMe(req, res, next);
 
-        expect(userFunctions.getPayloadFromToken).toHaveBeenCalledWith('');
-        expect(res.json).not.toHaveBeenCalled();
+        expect(res.json).toHaveBeenCalledWith(req.user);
         expect(next).toHaveBeenCalledWith(error);
     });
 });

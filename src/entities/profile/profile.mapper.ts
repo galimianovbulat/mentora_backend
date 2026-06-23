@@ -1,5 +1,5 @@
 import type { Profile } from './profile.entity';
-import type { IProfile, IStudentProfile,ITeacherProfile } from './profile.response';
+import type { IProfile, IStudentProfile, ITeacherProfile } from './profile.response';
 import type { StudentProfile } from './student-profile.entity';
 import type { TeacherProfile } from './teacher-profile.entity';
 
@@ -18,9 +18,9 @@ export function toMyProfileResponse(
 function toPublicProfile(profile: Profile): IProfile {
     return {
         firstName: profile.firstName,
-        lastName: profile.firstName,
+        lastName: profile.lastName,
         surName: profile.surName,
-    }
+    };
 }
 
 function toPublicTeacherProfile(profile: ITeacherProfile): ITeacherProfile {
@@ -28,11 +28,11 @@ function toPublicTeacherProfile(profile: ITeacherProfile): ITeacherProfile {
         discipline: profile.discipline,
         examType: profile.examType,
         schoolGrade: profile.schoolGrade,
-    }
+    };
 }
 
 function toPublicStudentProfile(profile: IStudentProfile): IStudentProfile {
     return {
         schoolGrade: profile.schoolGrade,
-    }
+    };
 }

@@ -1,5 +1,7 @@
 export const MAX_NAME_LENGTH = 100;
 
+export const PROFILE_ROUTE = 'profile';
+
 export enum DISCIPLINE {
     MATH = 'MATH',
     PHYSICS = 'PHYSICS',
