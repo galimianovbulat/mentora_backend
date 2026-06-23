@@ -27,3 +27,6 @@ export const createStudentProfileDto = baseProfileDto.extend({
 });
 
 export type CreateStudentProfileDto = z.infer<typeof createStudentProfileDto>;
+
+export const createFullTeacherProfileDto = createProfileDto.extend(createTeacherProfileDto.shape);
+export const createFullStudentProfileDto = createProfileDto.extend(createStudentProfileDto.shape);

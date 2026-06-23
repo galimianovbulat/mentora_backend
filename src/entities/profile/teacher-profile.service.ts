@@ -4,7 +4,7 @@ import { ApiError } from 'errors/api-error';
 import type { CreateTeacherProfileDto } from './profile.dto';
 import { TeacherProfile } from './teacher-profile.entity';
 
-export class ProfileService {
+export class TeacherProfileService {
     public constructor(
         private readonly teacherProfileRepository = AppDataSource.getRepository(TeacherProfile),
     ) {}

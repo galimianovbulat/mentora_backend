@@ -3,7 +3,7 @@ import type { Repository } from 'typeorm';
 
 import { DISCIPLINE, EXAM_TYPE, SCHOOL_GRADE } from './constants';
 import type { TeacherProfile } from './teacher-profile.entity';
-import { ProfileService as TeacherProfileService } from './teacher-profile.service';
+import { TeacherProfileService } from './teacher-profile.service';
 
 describe('TeacherProfileService', () => {
     let teacherProfileService: TeacherProfileService;
