@@ -36,10 +36,10 @@ export class ApiError extends Error {
     }
 
     public static notFound(entityName: string): ApiError {
-        return new ApiError(401, `${entityName} ${NOT_FOUND_MESSAGE}`);
+        return new ApiError(404, `${entityName} ${NOT_FOUND_MESSAGE}`);
     }
 
     public static alreadyExist(entityName: string): ApiError {
-        return new ApiError(401, `${entityName} ${ALREADY_EXIST_MESSAGE}`);
+        return new ApiError(409, `${entityName} ${ALREADY_EXIST_MESSAGE}`);
     }
 }
