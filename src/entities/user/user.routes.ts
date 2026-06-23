@@ -6,6 +6,6 @@ import { createUser, getMe, getUsers } from './user.controller';
 
 export const userRouter = Router();
 
-userRouter.post('/', authMiddleware(USER_ROLE.ADMIN), createUser);
+userRouter.post('/', authMiddleware([USER_ROLE.ADMIN]), createUser);
 userRouter.get('/me', authMiddleware(), getMe);
-userRouter.get('/', authMiddleware(USER_ROLE.ADMIN), getUsers);
+userRouter.get('/', authMiddleware([USER_ROLE.ADMIN]), getUsers);

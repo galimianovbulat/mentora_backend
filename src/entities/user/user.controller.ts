@@ -2,7 +2,6 @@ import { ApiError } from 'errors/api-error';
 import type { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 
-import { getPayloadFromToken } from './functions';
 import { createUserDto, getUsersDto } from './user.dto';
 import { toPublicUser } from './user.mapper';
 import { UserService } from './user.service';
@@ -28,11 +27,7 @@ export async function createUser(req: Request, res: Response, next: NextFunction
 
 export function getMe(req: Request, res: Response, next: NextFunction): void {
     try {
-        const authHeader = req.headers.authorization ?? '';
-        const token = authHeader.replace('Bearer ', '');
-        const payload = getPayloadFromToken(token);
-
-        res.json(payload);
+        res.json(req.user);
     } catch (error) {
         next(error);
     }
