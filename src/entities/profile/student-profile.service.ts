@@ -5,7 +5,9 @@ import type { CreateStudentProfileDto } from './profile.dto';
 import { StudentProfile } from './student-profile.entity';
 
 export class StudentProfileService {
-    public constructor(private readonly studentProfileRepository = AppDataSource.getRepository(StudentProfile)) {}
+    public constructor(
+        private readonly studentProfileRepository = AppDataSource.getRepository(StudentProfile),
+    ) {}
 
     public async getStudentProfileByUserId(userId: number): Promise<StudentProfile | null> {
         return this.studentProfileRepository.findOne({
@@ -15,7 +17,9 @@ export class StudentProfileService {
         });
     }
 
-    public async createStudentProfile(dto: CreateStudentProfileDto): Promise<StudentProfile | null> {
+    public async createStudentProfile(
+        dto: CreateStudentProfileDto,
+    ): Promise<StudentProfile | null> {
         const existingProfile = await this.getStudentProfileByUserId(dto.userId);
 
         if (existingProfile) {

@@ -5,7 +5,9 @@ import type { CreateTeacherProfileDto } from './profile.dto';
 import { TeacherProfile } from './teacher-profile.entity';
 
 export class ProfileService {
-    public constructor(private readonly teacherProfileRepository = AppDataSource.getRepository(TeacherProfile)) {}
+    public constructor(
+        private readonly teacherProfileRepository = AppDataSource.getRepository(TeacherProfile),
+    ) {}
 
     public async getTeacherProfileByUserId(userId: number): Promise<TeacherProfile | null> {
         return this.teacherProfileRepository.findOne({
