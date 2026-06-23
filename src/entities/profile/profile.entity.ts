@@ -7,7 +7,7 @@ export class Profile {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column('number', {
+    @Column('int', {
         unique: true,
     })
     userId!: number;

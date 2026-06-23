@@ -5,7 +5,6 @@ import type { CreateProfileDto, CreateTeacherProfileDto } from './profile.dto';
 import { Profile } from './profile.entity';
 import type { TeacherProfile } from './teacher-profile.entity';
 
-
 export class ProfileService {
     public constructor(private readonly profileRepository = AppDataSource.getRepository(Profile)) {}
 
@@ -29,10 +28,12 @@ export class ProfileService {
             firstName: dto.firstName,
             lastName: dto.lastName,
             surName: dto.surName ?? null,
-        })
+        });
     }
 
-    public async createTeacherProfile(dto: CreateTeacherProfileDto): Promise<TeacherProfile | null> {
+    public async createTeacherProfile(
+        dto: CreateTeacherProfileDto,
+    ): Promise<TeacherProfile | null> {
         const existingProfile = await this.getProfileByUserId(dto.userId);
 
         if (existingProfile) {
@@ -44,6 +45,6 @@ export class ProfileService {
             discipline: dto.discipline,
             examType: dto.examType,
             schoolGrade: dto.schoolGrade,
-        })
+        });
     }
 }

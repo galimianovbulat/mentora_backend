@@ -1,7 +1,9 @@
+import config from 'config';
+import { Profile } from 'entities/profile/profile.entity';
+import { StudentProfile } from 'entities/profile/student-profile.entity';
+import { TeacherProfile } from 'entities/profile/teacher-profile.entity';
+import { User } from 'entities/user/user.entity';
 import { DataSource } from 'typeorm';
-
-import config from './config';
-import { User } from './entities/user/user.entity';
 
 export const AppDataSource = new DataSource({
     type: 'postgres',
@@ -15,5 +17,5 @@ export const AppDataSource = new DataSource({
 
     synchronize: true,
 
-    entities: [User],
+    entities: [User, Profile, TeacherProfile, StudentProfile],
 });

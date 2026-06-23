@@ -2,13 +2,12 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 import { SCHOOL_GRADE } from './constants';
 
-
 @Entity()
 export class StudentProfile {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column('number', {
+    @Column('int', {
         unique: true,
     })
     userId!: number;
