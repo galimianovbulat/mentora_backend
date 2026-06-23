@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 import { SCHOOL_GRADE } from './constants';
 
@@ -16,4 +16,7 @@ export class StudentProfile {
         enum: SCHOOL_GRADE,
     })
     schoolGrade!: SCHOOL_GRADE;
+
+    @CreateDateColumn()
+    createdAt!: Date;
 }

@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 import { MAX_NAME_LENGTH } from './constants';
 
@@ -27,4 +27,7 @@ export class Profile {
         nullable: true,
     })
     surName!: string | null;
+
+    @CreateDateColumn()
+    createdAt!: Date;
 }

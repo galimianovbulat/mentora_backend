@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 import { DISCIPLINE, EXAM_TYPE, SCHOOL_GRADE } from './constants';
 
@@ -29,4 +29,7 @@ export class TeacherProfile {
         array: true,
     })
     schoolGrade!: SCHOOL_GRADE[];
+
+    @CreateDateColumn()
+    createdAt!: Date;
 }
