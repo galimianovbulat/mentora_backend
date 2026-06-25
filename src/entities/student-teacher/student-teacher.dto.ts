@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-export const createLink = z.object({
+export const createLinkDto = z.object({
     studentId: z.number(),
     teacherId: z.number(),
 });
 
-export type CreateLink = z.infer<typeof createLink>;
+export type CreateLinkDto = z.infer<typeof createLinkDto>;

@@ -23,21 +23,23 @@ describe('StudentTeacherLinkService', () => {
         );
     });
 
-    describe('getLinksByStudentId', () => {
-        it('returns active links for the specified student', async () => {
+    describe('getTeachersListIdByStudentId', () => {
+        it('returns teacher ids from active links for the specified student', async () => {
             const links = [
                 {
-                    id: 1,
-                    studentId: 10,
                     teacherId: 20,
-                    isActive: true,
-                    createdAt: new Date(),
+                },
+                {
+                    teacherId: 21,
                 },
             ] as StudentTeacherLink[];
             repository.find.mockResolvedValue(links);
 
-            await expect(service.getLinksByStudentId(10)).resolves.toBe(links);
+            await expect(service.getTeachersListIdByStudentId(10)).resolves.toEqual([20, 21]);
             expect(repository.find).toHaveBeenCalledWith({
+                select: {
+                    teacherId: true,
+                },
                 where: {
                     studentId: 10,
                     isActive: true,
@@ -46,21 +48,23 @@ describe('StudentTeacherLinkService', () => {
         });
     });
 
-    describe('getLinksByTeacherId', () => {
-        it('returns active links for the specified teacher', async () => {
+    describe('getStudentsListIdByTeacherId', () => {
+        it('returns student ids from active links for the specified teacher', async () => {
             const links = [
                 {
-                    id: 1,
                     studentId: 10,
-                    teacherId: 20,
-                    isActive: true,
-                    createdAt: new Date(),
+                },
+                {
+                    studentId: 11,
                 },
             ] as StudentTeacherLink[];
             repository.find.mockResolvedValue(links);
 
-            await expect(service.getLinksByTeacherId(20)).resolves.toBe(links);
+            await expect(service.getStudentsListIdByTeacherId(20)).resolves.toEqual([10, 11]);
             expect(repository.find).toHaveBeenCalledWith({
+                select: {
+                    studentId: true,
+                },
                 where: {
                     teacherId: 20,
                     isActive: true,
