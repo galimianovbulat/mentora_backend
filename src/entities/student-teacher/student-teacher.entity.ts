@@ -14,7 +14,7 @@ export class StudentTeacherLink {
     @Column('int')
     teacherId!: number;
 
-    @Column({
+    @Column('boolean', {
         default: true,
     })
     isActive!: boolean;
