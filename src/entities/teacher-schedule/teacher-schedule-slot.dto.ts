@@ -14,17 +14,14 @@ export const getTeacherScheduleSlotsDto = z.object({
 
 export type GetTeacherScheduleSlotsDto = z.infer<typeof getTeacherScheduleSlotsDto>;
 
-export const updateTeacherScheduleSlotDto = z.object({
-    startAt: z.coerce.date().optional(),
-    endAt: z.coerce.date().optional(),
-}).refine(
-    (data) =>
-        data.startAt !== undefined ||
-        data.endAt !== undefined,
-    {
+export const updateTeacherScheduleSlotDto = z
+    .object({
+        startAt: z.coerce.date().optional(),
+        endAt: z.coerce.date().optional(),
+    })
+    .refine((data) => data.startAt !== undefined || data.endAt !== undefined, {
         path: ['startAt'],
         message: 'At least one field must be provided',
-    },
-);
+    });
 
 export type UpdateTeacherScheduleSlotDto = z.infer<typeof updateTeacherScheduleSlotDto>;
