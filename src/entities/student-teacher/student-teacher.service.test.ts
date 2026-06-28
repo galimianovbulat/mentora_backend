@@ -145,15 +145,14 @@ describe('StudentTeacherLinkService', () => {
                 isActive: true,
                 createdAt: new Date(),
             } as StudentTeacherLink;
-            const updateResult = {
+            repository.findOne.mockResolvedValue(link);
+            repository.update.mockResolvedValue({
                 generatedMaps: [],
                 raw: [],
                 affected: 1,
-            };
-            repository.findOne.mockResolvedValue(link);
-            repository.update.mockResolvedValue(updateResult);
+            });
 
-            await expect(service.deleteLink(1)).resolves.toBe(updateResult);
+            await expect(service.deleteLink(1)).resolves.toBeUndefined();
             expect(repository.findOne).toHaveBeenCalledWith({
                 where: {
                     id: 1,

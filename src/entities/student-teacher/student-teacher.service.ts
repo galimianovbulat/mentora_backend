@@ -64,7 +64,7 @@ export class StudentTeacherLinkService {
         });
     }
 
-    public async deleteLink(linkId: number) {
+    public async deleteLink(linkId: number): Promise<void> {
         const link = await this.StudentTeacherLinkRepository.findOne({
             where: {
                 id: linkId,
@@ -75,7 +75,7 @@ export class StudentTeacherLinkService {
             throw ApiError.notFound('StudentTeacher link');
         }
 
-        return this.StudentTeacherLinkRepository.update(
+        await this.StudentTeacherLinkRepository.update(
             {
                 id: linkId,
             },
