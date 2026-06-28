@@ -1,0 +1,1 @@
+export const DEFAULT_TEACHER_SCHEDULE_DAYS = 14;
